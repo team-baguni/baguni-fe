@@ -5,8 +5,8 @@ on:
     branches:
       - 'develop' # 배포 대상 브랜치
     paths:
-      - 'frontend/techpick/**'
-      - 'frontend/techpick-shared/**'
+      - 'techpick/**'
+      - 'techpick-shared/**'
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       - # .env 파일 설정
         name: Create .env.production
         run: |
-          cd ./frontend/techpick
+          cd ./techpick
           touch .env.production
           echo "NEXT_PUBLIC_API=${{ secrets.FRONT_NEXT_PUBLIC_API }}" >> .env.production
           echo "NEXT_PUBLIC_DOMAIN=${{ secrets.FRONT_NEXT_PUBLIC_DOMAIN }}" >> .env.production
@@ -38,7 +38,7 @@ jobs:
       - # .env.sentry-build-plugin 설정
         name: Create .env.sentry-build-plugin
         run: |
-          cd ./frontend/techpick
+          cd ./techpick
           touch .env.sentry-build-plugin
           echo "SENTRY_AUTH_TOKEN=${{secrets.FRONT_SENTRY_AUTH_TOKEN}}" >> .env.sentry-build-plugin
 
