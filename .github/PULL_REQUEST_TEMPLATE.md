@@ -1,11 +1,12 @@
 - Close #ISSUE_NUMBER
 
+<!--title -->
 ## What is this PR? 🔍
+<!--issue -->
+- #000
+<!-- description -->
 
-- 기능 :
-- issue : #
 
-## Changes 📝
 
 <!--
 ## ScreenShot 📷
@@ -17,6 +18,9 @@
 -->
 
 ## Precaution
+
+## P.S
+
 
 <!-- ## ✔️ Please check if the PR fulfills these requirements
 

@@ -1,11 +1,11 @@
-if git diff --cached --name-only | grep -q '^frontend/techpick-extension'; then
-  echo "frontend/techpick-extension lint or tsc error"
-  cd "frontend/techpick-extension" 
+if git diff --cached --name-only | grep -q '^techpick-extension'; then
+  echo "techpick-extension lint or tsc error"
+  cd "techpick-extension" 
   yarn lint
   yarn tsc -b
-elif git diff --cached --name-only | grep -q '^frontend/techpick'; then
-  echo "frontend/techpick lint or tsc error"
-  cd frontend/techpick 
+elif git diff --cached --name-only | grep -q '^techpick'; then
+  echo "techpick lint or tsc error"
+  cd techpick 
   yarn lint
   yarn tsc
 fi
