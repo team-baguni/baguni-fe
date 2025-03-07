@@ -1,1 +1,0 @@
-ALTER TABLE rss_blog RENAME TO blog;

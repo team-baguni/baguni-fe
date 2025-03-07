@@ -1,7 +1,0 @@
-rootProject.name = 'backend'
-include 'baguni-common'
-include 'baguni-infra'
-
-include 'baguni-api'
-include 'baguni-batch'
-
