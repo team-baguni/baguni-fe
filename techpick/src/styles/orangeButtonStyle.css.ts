@@ -12,6 +12,7 @@ export const orangeSolidButtonStyle = style([
     color: colorVars.orange1,
     ':hover': { backgroundColor: colorVars.orange10 },
     ':active': { backgroundColor: colorVars.orange11 },
+    ':focus': { backgroundColor: colorVars.orange11 },
   },
 ]);
 

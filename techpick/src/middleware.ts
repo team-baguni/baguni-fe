@@ -35,5 +35,11 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/recommend', req.url));
   }
 
+  if (pathname.startsWith('/dev')) {
+    if (process.env.NODE_ENV !== 'development') {
+      return NextResponse.redirect(new URL('/'));
+    }
+  }
+
   return NextResponse.next();
 }
