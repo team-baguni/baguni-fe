@@ -55,6 +55,8 @@ export const apiClient = ky.create({
               }
             }
           }
+
+          throw error;
         }
 
         return httpError;
