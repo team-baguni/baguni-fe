@@ -9,3 +9,4 @@ yarn playwright install
 ```
 3. `env.example`을 참조해서 환경변수를 주입해주세요.
 4. `package.json`에 명세된 방식으로 script를 실행하면 됩니다. ex) `yarn test:e2e`, `yarn test:ui`
+5. login의 경우 /dev/login으로 들어가주세요.
