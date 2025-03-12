@@ -32,8 +32,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env-file
-          path: techpick/.env.development
-          retention-seconds: 1800  # 30분 = 1800초
+          path: .env.development
+          retention-days: 1
 
   install-dependencies:
     name: Install Dependencies
