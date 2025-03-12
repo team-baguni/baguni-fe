@@ -1,7 +1,6 @@
 import { QueryProvider } from '@/libs/@react-query/QueryProvider';
 import { Noto_Sans_KR } from 'next/font/google';
 import '@/styles/reset.css';
-import { PORTAL_CONTAINER_ID } from '@/constants/portalContainerId';
 import { UserIdentifyProvider } from '@/libs/@eventlog/UserIdentifyProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
@@ -44,10 +43,7 @@ export default async function RootLayout({
       <UserIdentifyProvider userId={userId}>
         <ThemeProvider classname={`${notoSansKR.className}`}>
           <ToastProvider>
-            <QueryProvider>
-              {children}
-              <div id={PORTAL_CONTAINER_ID} />
-            </QueryProvider>
+            <QueryProvider>{children}</QueryProvider>
           </ToastProvider>
         </ThemeProvider>
       </UserIdentifyProvider>
