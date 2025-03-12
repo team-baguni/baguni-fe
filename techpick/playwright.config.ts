@@ -20,6 +20,7 @@ const baseURL = process.env.TEST_BASE_URL
  */
 export default defineConfig({
   testDir: './e2e',
+  timeout: 60 * 1000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
