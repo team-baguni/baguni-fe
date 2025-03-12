@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-test('has h1 tag', async ({ page }) => {
-  await page.goto('/landing');
+test('로그인하지 않은 유저는 랜딩 페이지를 마주한다.', async ({ page }) => {
+  await page.goto('/');
 
   // Expect a title "to contain" a substring.
   await expect(page.locator('h1')).toContainText(
