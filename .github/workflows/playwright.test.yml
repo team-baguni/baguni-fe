@@ -6,15 +6,50 @@ on:
       - 'frontend/techpick/**'
       - 'frontend/techpick-shared/**'
   workflow_dispatch:
+
 jobs:
-  test:
-    timeout-minutes: 60
+  setup-environment:
+    name: Setup Environment
+    environment: Local
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend/techpick
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Create .env.development File
+        run: |
+          echo "NEXT_PUBLIC_API=${{ secrets.FRONT_NEXT_PUBLIC_API }}" >> .env.development
+          echo "NEXT_PUBLIC_DOMAIN=${{ secrets.FRONT_NEXT_PUBLIC_DOMAIN }}" >> .env.development
+          echo "NEXT_PUBLIC_REDIRECT_URL=${{secrets.FRONT_NEXT_PUBLIC_REDIRECT_URL}}" >> .env.development
+          echo "NEXT_PUBLIC_MIXPANEL_TOKEN=${{secrets.FRONT_NEXT_PUBLIC_MIXPANEL_TOKEN}}" >> .env.development
+          echo "NEXT_PUBLIC_IMAGE_URL=${{secrets.FRONT_NEXT_PUBLIC_IMAGE_URL}}" >> .env.development
+
+      - name: Upload .env.development
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-file
+          path: frontend/techpick/.env.development
+          retention-seconds: 1800  # 30분 = 1800초
+
+  install-dependencies:
+    name: Install Dependencies
+    needs: setup-environment
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/techpick
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Download .env.development
+        uses: actions/download-artifact@v4
+        with:
+          name: env-file
+
       - name: Enable Corepack
         run: corepack enable
 
@@ -30,10 +65,34 @@ jobs:
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
 
+  run-tests:
+    name: Run Playwright Tests
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/techpick
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Start Development Server (HTTPS)
+        run: |
+          yarn dev:https &
+          echo $! > server.pid # Save the server process ID to a file for later use
+
+      - name: Wait for Server to Start
+        run: sleep 60 
+
       - name: Run Playwright tests
         run: yarn playwright test
 
-      - name: 'Upload Playwright Report'
+      - name: Stop Development Server
+        if: always()
+        run: |
+          kill $(cat server.pid) # Kill the server process using the saved PID
+
+      - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
