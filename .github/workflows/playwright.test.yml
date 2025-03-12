@@ -47,3 +47,8 @@ jobs:
           name: playwright-report
           path: techpick/playwright-report/
           retention-days: 10
+      
+      - name: SLACK Webhook Notification
+        if: always()
+        with:
+          slack_webhook_url: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
