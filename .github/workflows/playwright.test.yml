@@ -71,4 +71,4 @@ jobs:
               - type: "section"
                 text:
                   type: "mrkdwn"
-                  text: "Playwright Report: Playwright Report: [Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+                  text: "Playwright Report: [Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
