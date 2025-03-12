@@ -11,8 +11,8 @@ import dotenv from 'dotenv';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 dotenv.config({ path: path.resolve(__dirname, '.env.development') });
-const baseURL = process.env.NEXT_PUBLIC_DOMAIN
-  ? `https://${process.env.NEXT_PUBLIC_DOMAIN}:3000`
+const baseURL = process.env.TEST_BASE_URL
+  ? `${process.env.TEST_BASE_URL}`
   : 'http://localhost:3000';
 
 /**
