@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    environment: Test
     runs-on: ubuntu-latest
     env:
       docker-hub-username: 'shd2768' # 송해덕
