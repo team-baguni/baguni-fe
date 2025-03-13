@@ -24,7 +24,6 @@ export const FolderDraggable = ({
       type: 'folder',
     },
   });
-  const folderElementId = `folderId-${folderId}`;
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -49,7 +48,6 @@ export const FolderDraggable = ({
       style={style}
       {...attributes}
       {...listeners}
-      id={folderElementId}
       suppressHydrationWarning={true}
     >
       {children}
