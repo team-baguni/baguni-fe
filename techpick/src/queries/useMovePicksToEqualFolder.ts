@@ -16,11 +16,11 @@ export function useMovePicksToEqualFolder() {
 
   const mutate = async (
     movePicksParam: UseMovePicksMutationFnParamType,
-    { onSuccess = () => {}, onError = () => {} }: MutateOptionType,
+    afterMutate: MutateOptionType = { onSuccess: () => {}, onError: () => {} },
   ) => {
     const { toPickId, sourceFolderId, fromPickId, movePicksInfo } =
       movePicksParam;
-
+    const { onSuccess = () => {}, onError = () => {} } = afterMutate;
     const prevInfiniteData = queryClient.getQueryData<
       InfiniteData<GetPickListResponseType>
     >(pickKeys.folderInfinite(sourceFolderId));

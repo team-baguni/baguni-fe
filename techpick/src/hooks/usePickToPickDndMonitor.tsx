@@ -59,19 +59,16 @@ export function usePickToPickDndMonitor() {
     )
       return;
 
-    movePicksToEqualFolder(
-      {
-        fromPickId: Number(activeObject.id),
-        sourceFolderId: activeObject.parentFolderId,
-        toPickId: Number(overObject.id),
-        movePicksInfo: {
-          idList: selectedPickIdList,
-          destinationFolderId: activeObject.parentFolderId,
-          orderIdx: overObject.sortable.index,
-        },
+    movePicksToEqualFolder({
+      fromPickId: Number(activeObject.id),
+      sourceFolderId: activeObject.parentFolderId,
+      toPickId: Number(overObject.id),
+      movePicksInfo: {
+        idList: selectedPickIdList,
+        destinationFolderId: activeObject.parentFolderId,
+        orderIdx: overObject.sortable.index,
       },
-      {},
-    );
+    });
   };
 
   useDndMonitor({
