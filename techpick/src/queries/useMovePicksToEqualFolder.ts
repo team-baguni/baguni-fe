@@ -2,9 +2,8 @@
 
 import { movePicks } from '@/apis/pick/movePicks';
 import { PICK_LIST_SIZE } from '@/constants/pickListSize';
-import { syncUpdate } from '@/libs/@react-query/taskScheduler';
+import { useMutationWithSyncUpdate } from '@/libs/@react-query/useMutationWithSyncUpdate';
 import type { GetPickListResponseType } from '@/types/GetPickListResponseType';
-import type { MutateOptionType } from '@/types/MutateOptionType';
 import type { UseMovePicksMutationFnParamType } from '@/types/UseMovePicksMutationFnParamType';
 import { convertToInfiniteDataFromPickList } from '@/utils/convertToInfiniteDataFromPickList';
 import { getMovedToEqualFolderPickList } from '@/utils/getMovedToEqualFolderPickList';
@@ -14,33 +13,29 @@ import { pickKeys } from './pickKeys';
 export function useMovePicksToEqualFolder() {
   const queryClient = useQueryClient();
 
-  const mutate = async (
-    movePicksParam: UseMovePicksMutationFnParamType,
-    afterMutate: MutateOptionType = { onSuccess: () => {}, onError: () => {} },
-  ) => {
-    const { toPickId, sourceFolderId, fromPickId, movePicksInfo } =
-      movePicksParam;
-    const { onSuccess = () => {}, onError = () => {} } = afterMutate;
-    const prevInfiniteData = queryClient.getQueryData<
-      InfiniteData<GetPickListResponseType>
-    >(pickKeys.folderInfinite(sourceFolderId));
-    const prevPickList =
-      prevInfiniteData?.pages.flatMap((page) => page.content) ?? [];
+  return useMutationWithSyncUpdate({
+    mutationFn: (movePicksParam: UseMovePicksMutationFnParamType) =>
+      movePicks(movePicksParam.movePicksInfo),
+    onMutate({ fromPickId, movePicksInfo, sourceFolderId, toPickId }) {
+      const prevInfiniteData = queryClient.getQueryData<
+        InfiniteData<GetPickListResponseType>
+      >(pickKeys.folderInfinite(sourceFolderId));
+      const prevPickList =
+        prevInfiniteData?.pages.flatMap((page) => page.content) ?? [];
 
-    const nextPickList = getMovedToEqualFolderPickList({
-      prevPickList,
-      fromPickId,
-      toPickId,
-      movePicksInfo,
-    });
+      const nextPickList = getMovedToEqualFolderPickList({
+        prevPickList,
+        fromPickId,
+        toPickId,
+        movePicksInfo,
+      });
 
-    const nextInfiniteData = convertToInfiniteDataFromPickList({
-      pickList: nextPickList,
-      contentSize: PICK_LIST_SIZE,
-      oldData: prevInfiniteData,
-    });
+      const nextInfiniteData = convertToInfiniteDataFromPickList({
+        pickList: nextPickList,
+        contentSize: PICK_LIST_SIZE,
+        oldData: prevInfiniteData,
+      });
 
-    syncUpdate(() => {
       queryClient.setQueryData<InfiniteData<GetPickListResponseType>>(
         pickKeys.folderInfinite(sourceFolderId),
         (oldData) => {
@@ -51,23 +46,11 @@ export function useMovePicksToEqualFolder() {
           return nextInfiniteData;
         },
       );
-    });
-
-    try {
-      await movePicks(movePicksInfo);
-      onSuccess();
-    } catch {
-      queryClient.setQueryData(
-        pickKeys.folderInfinite(sourceFolderId),
-        prevInfiniteData,
-      );
-      onError();
-    }
-
-    queryClient.invalidateQueries({
-      queryKey: pickKeys.folderInfinite(sourceFolderId),
-    });
-  };
-
-  return { mutate };
+    },
+    onSettled(_data, _error, { sourceFolderId }) {
+      queryClient.invalidateQueries({
+        queryKey: pickKeys.folderInfinite(sourceFolderId),
+      });
+    },
+  });
 }

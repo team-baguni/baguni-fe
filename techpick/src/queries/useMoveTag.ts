@@ -2,16 +2,17 @@
 
 import { moveTag } from '@/apis/tag/moveTag';
 import { syncUpdate } from '@/libs/@react-query/taskScheduler';
+import { useMutationWithSyncUpdate } from '@/libs/@react-query/useMutationWithSyncUpdate';
 import type { GetTagListResponseType } from '@/types/GetTagListResponseType';
 import { hasIndex } from '@/utils/hasIndex';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { tagKeys } from './tagKeys';
 
 export function useMoveTag() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutationWithSyncUpdate({
     mutationFn: moveTag,
     onMutate({ id, orderIdx }) {
       syncUpdate(() => {
