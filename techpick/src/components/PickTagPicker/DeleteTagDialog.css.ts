@@ -6,7 +6,7 @@ import {
 import { redOutlineButtonStyle } from '@/styles/redButtonStyle.css';
 import { sandOutlineButtonStyle } from '@/styles/sandButtonStyle.css';
 import { style } from '@vanilla-extract/css';
-import { zIndex } from 'techpick-shared';
+import { fontWeights, zIndex } from 'techpick-shared';
 
 export const dialogContentStyle = style([
   dialogContentLayoutStyle,
@@ -45,3 +45,8 @@ export const deleteTagCancelButtonStyle = style([
     fontSize: '14px',
   },
 ]);
+
+export const textStyle = style({
+  fontSize: '1rem',
+  fontWeight: fontWeights.medium,
+});

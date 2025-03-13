@@ -1,3 +1,4 @@
+import { FOLDER } from '@/constants/folder';
 import type { FolderDraggableObjectType } from '@/types/FolderDraggableObjectType';
 
 export const isFolderDraggableObject = (
@@ -7,7 +8,7 @@ export const isFolderDraggableObject = (
     !data ||
     typeof data !== 'object' ||
     !('id' in data) ||
-    !('type' in data && data.type === 'folder') ||
+    !('type' in data && data.type === FOLDER) ||
     !('sortable' in data)
   ) {
     return false;

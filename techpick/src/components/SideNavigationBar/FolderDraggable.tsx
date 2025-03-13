@@ -1,6 +1,5 @@
 'use client';
-
-import { useFolderStore } from '@/stores/folderStore';
+import { FOLDER } from '@/constants/folder';
 import type { FolderIdType } from '@/types/FolderIdType';
 import { getFolderSortableContextId } from '@/utils/getFolderSortableContextId';
 import { useSortable } from '@dnd-kit/sortable';
@@ -12,29 +11,28 @@ export const FolderDraggable = ({
   folderId,
   children,
 }: PropsWithChildren<FolderDraggableProps>) => {
-  const { isDragging } = useFolderStore();
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging: isActiveDragging,
+    isDragging,
   } = useSortable({
     id: getFolderSortableContextId(folderId),
     data: {
       id: folderId,
-      type: 'folder',
+      type: FOLDER,
     },
   });
-  const folderElementId = `folderId-${folderId}`;
+  const folderElementId = `${FOLDER}-${folderId}`;
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  if (isDragging && isActiveDragging) {
+  if (isDragging) {
     return (
       <div
         ref={setNodeRef}

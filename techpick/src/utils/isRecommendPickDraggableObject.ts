@@ -1,3 +1,4 @@
+import { RECOMMEND_PICK } from '@/constants/recommendPick';
 import type { RecommendPickType } from '@/types/RecommendPickType';
 
 export const isRecommendPickDraggableObject = (
@@ -7,7 +8,7 @@ export const isRecommendPickDraggableObject = (
     return false;
   }
 
-  if (!('type' in data && data.type === 'recommend')) {
+  if (!('type' in data && data.type === RECOMMEND_PICK)) {
     return false;
   }
 

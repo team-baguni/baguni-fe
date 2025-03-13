@@ -1,10 +1,10 @@
 'use client';
 
 import { getQueryClient } from '@/libs/@react-query/getQueryClient';
-import { taskScheduler } from '@/libs/@react-query/taskScheduler';
 import { QueryClientProvider, notifyManager } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { PropsWithChildren } from 'react';
+import { taskScheduler } from './taskScheduler';
 
 export const QueryProvider = ({ children }: PropsWithChildren) => {
   const queryClient = getQueryClient();

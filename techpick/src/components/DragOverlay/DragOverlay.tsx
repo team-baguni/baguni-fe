@@ -1,10 +1,19 @@
 'use client';
 
 import { useGetDragOverStyle } from '@/hooks/useGetDragOverStyle';
-import { useDraggingRecommendPickStore } from '@/stores/draggingRecommendPickStore';
-import { useFolderStore } from '@/stores/folderStore';
+import { useFetchFolders } from '@/queries/useFetchFolders';
 import { usePickStore } from '@/stores/pickStore';
-import { DragOverlay as DragOverlayPrimitive } from '@dnd-kit/core';
+import type { FolderType } from '@/types/FolderType';
+import type { RecommendPickType } from '@/types/RecommendPickType';
+import { getFolderInfoByFolderId } from '@/utils/getFolderInfoByFolderId';
+import { isFolderDraggableObject } from '@/utils/isFolderDraggableObject';
+import { isRecommendPickDraggableObject } from '@/utils/isRecommendPickDraggableObject';
+import {
+  DragOverlay as DragOverlayPrimitive,
+  type DragStartEvent,
+  useDndMonitor,
+} from '@dnd-kit/core';
+import { useState } from 'react';
 import { FolderItemOverlay } from './FolderItemOverlay';
 import { PickCarouselCardOverlay } from './PickCarouselCardOverlay';
 import { PickDragOverlayShadowList } from './PickDragOverlayShadowList';
@@ -12,12 +21,45 @@ import { PickRecordOverlay } from './PickRecordOverlay';
 import { dragCountStyle, stackedOverlayStyle } from './dragOverlay.css';
 
 export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
-  const { isDragging: isFolderDragging, draggingFolderInfo } = useFolderStore();
   const isPickDragging = usePickStore((state) => state.isDragging);
   const draggingPickInfo = usePickStore((state) => state.draggingPickInfo);
   const selectedPickIdList = usePickStore((state) => state.selectedPickIdList);
-  const { isDragging: isRecommendPickDragging, draggingRecommendPickInfo } =
-    useDraggingRecommendPickStore();
+  const [draggingObjectType, setDraggingObjectType] =
+    useState<DraggingObjectType>(null);
+  const [draggingRecommendPickInfo, setDraggingRecommendPickInfo] =
+    useState<RecommendPickType | null>(null);
+  const { data: folderRecord } = useFetchFolders();
+  const [draggingFolderInfo, setDraggingFolderInfo] =
+    useState<FolderType | null>(null);
+
+  const onDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const activeObject = active.data.current;
+
+    if (isRecommendPickDraggableObject(activeObject)) {
+      setDraggingObjectType('recommendPick');
+      setDraggingRecommendPickInfo(activeObject);
+      return;
+    }
+
+    if (isFolderDraggableObject(activeObject)) {
+      const folderId = Number(activeObject.id);
+      const folderInfo = getFolderInfoByFolderId({ folderId, folderRecord });
+
+      if (!folderInfo) {
+        return;
+      }
+
+      setDraggingObjectType('folder');
+      setDraggingFolderInfo(folderInfo);
+    }
+  };
+
+  const onDragEnd = async () => {
+    setDraggingObjectType(null);
+  };
+
+  useDndMonitor({ onDragStart, onDragEnd });
 
   const { overlayStyle: pickOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
@@ -26,11 +68,11 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   });
   const { overlayStyle: folderOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
-    isDragging: isFolderDragging,
+    isDragging: draggingObjectType === 'folder',
   });
   const { overlayStyle: recommendPickOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
-    isDragging: isRecommendPickDragging,
+    isDragging: draggingObjectType === 'recommendPick',
     scale: 0.4,
   });
   const selectedPickListCount = selectedPickIdList.length - 1;
@@ -52,7 +94,7 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     );
   }
 
-  if (isFolderDragging && draggingFolderInfo) {
+  if (draggingObjectType === 'folder' && draggingFolderInfo) {
     return (
       <DragOverlayPrimitive style={folderOverlayStyle}>
         <FolderItemOverlay name={draggingFolderInfo.name} />
@@ -60,7 +102,7 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     );
   }
 
-  if (isRecommendPickDragging && draggingRecommendPickInfo) {
+  if (draggingObjectType === 'recommendPick' && draggingRecommendPickInfo) {
     return (
       <DragOverlayPrimitive style={recommendPickOverlayStyle}>
         <PickCarouselCardOverlay recommendPick={draggingRecommendPickInfo} />
@@ -75,3 +117,5 @@ interface DargOverlayProps {
     y: number;
   };
 }
+
+type DraggingObjectType = 'recommendPick' | 'pick' | 'folder' | null;

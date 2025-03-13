@@ -2,16 +2,11 @@
 import { useEventLogger } from '@/libs/@eventlog/useEventLogger';
 import { useCreatePick } from '@/queries/useCreatePick';
 import { useFetchBasicFolders } from '@/queries/useFetchBasicFolders';
-import { useDraggingRecommendPickStore } from '@/stores/draggingRecommendPickStore';
 import { isPickToFolderDroppableObject } from '@/utils/isPickToFolderDroppableObject';
 import { isRecommendPickDraggableObject } from '@/utils/isRecommendPickDraggableObject';
 import { notifyError, notifySuccess } from '@/utils/toast';
 import { useDndMonitor } from '@dnd-kit/core';
-import type {
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 
 /**
  * @description 추천 목록에서 folder로 dnd를 할 때의 이벤트를 감지하고 동작하는 hook입니다.
@@ -19,37 +14,9 @@ import type {
 export function useRecommendPickToFolderDndMonitor() {
   const { data: basicFolderRecord } = useFetchBasicFolders();
   const { mutate: createPick } = useCreatePick();
-  const { setIsDragging, setDraggingPickInfo } =
-    useDraggingRecommendPickStore();
   const { trackEvent: trackRecommendBookmarkSave } = useEventLogger({
     eventName: 'recommend_page_bookmark_save',
   });
-
-  const onDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    const activeObject = active.data.current;
-
-    if (!isRecommendPickDraggableObject(activeObject)) {
-      return;
-    }
-
-    setIsDragging(true);
-    setDraggingPickInfo(activeObject);
-  };
-
-  const onDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return; // 드래그 중 놓은 위치가 없을 때 종료
-
-    const activeObject = active.data.current;
-    const overObject = over.data.current;
-
-    if (
-      !isRecommendPickDraggableObject(activeObject) ||
-      !isPickToFolderDroppableObject(overObject)
-    )
-      return;
-  };
 
   const onDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -88,8 +55,6 @@ export function useRecommendPickToFolderDndMonitor() {
   };
 
   useDndMonitor({
-    onDragStart: onDragStart,
-    onDragOver: onDragOver,
     onDragEnd: onDragEnd,
   });
 }

@@ -2,12 +2,11 @@
 
 import { ROUTES } from '@/constants/route';
 import { dialogOverlayStyle } from '@/styles/dialogStyle.css';
-import { Popover, PopoverContent, PopoverTrigger } from '@/ui/Popover/Popover';
-import { handleShareFolderLinkCopy } from '@/utils/handleShareFolderLinkCopy';
+import { notifySuccess } from '@/utils/toast';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Settings } from 'lucide-react';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { ShareFolderStatusContext } from './ShareFolderStatusProvider';
 import {
   closeIcon,
@@ -18,7 +17,6 @@ import {
   icon,
   linkContent,
   myLinkPageLinkText,
-  popoverStyle,
   shareFolderDialogContentStyle,
   sharedFolderLink,
 } from './shareFolderDialog.css';
@@ -26,12 +24,12 @@ import {
 export function ShareFolderDialog() {
   const { isOpenShareFolderDialog, onCloseShareFolderDialog, uuid } =
     useContext(ShareFolderStatusContext);
-  const [showPopover, setShowPopover] = useState<boolean>(false);
-  const handleShowPopover = () => {
-    setShowPopover(true);
-    setTimeout(() => setShowPopover(false), 2000);
-  };
   const shareFolderLink = `${window.location.origin}/share/${uuid}`;
+  const writeUserClipboard = () => {
+    navigator.clipboard.writeText(shareFolderLink).then(() => {
+      notifySuccess('링크 복사 완료');
+    });
+  };
 
   return (
     <DialogPrimitive.Root
@@ -69,18 +67,13 @@ export function ShareFolderDialog() {
             >
               {shareFolderLink}
             </div>
-            <Popover open={showPopover}>
-              <PopoverTrigger asChild>
-                {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-                <button
-                  className={copyButton}
-                  onClick={() => handleShareFolderLinkCopy(handleShowPopover)}
-                >
-                  Copy
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className={popoverStyle}>Copied</PopoverContent>
-            </Popover>
+            <button
+              type="button"
+              className={copyButton}
+              onClick={writeUserClipboard}
+            >
+              Copy
+            </button>
           </div>
           <DialogPrimitive.Close
             className={closeIcon}

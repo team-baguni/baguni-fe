@@ -10,7 +10,7 @@ import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import DOMPurify from 'dompurify';
 import { EllipsisIcon } from 'lucide-react';
 import { useRef } from 'react';
-import { ShowDeleteTagDialogButton } from './ShowDeleteTagDialogButton';
+import { DeleteTagDialogTriggerButton } from './DeleteTagDialogTriggerButton';
 import {
   popoverTriggerButtonStyle,
   tagInfoEditFormLayout,
@@ -101,7 +101,7 @@ export function TagInfoEditPopoverButton({
               onKeyDown={handleInputKeyDown}
               className={tagInputStyle}
             />
-            <ShowDeleteTagDialogButton tag={tag} onClick={closePopover} />
+            <DeleteTagDialogTriggerButton tag={tag} onClick={closePopover} />
             <VisuallyHidden.Root>
               <button type="submit" aria-label="제출">
                 제출

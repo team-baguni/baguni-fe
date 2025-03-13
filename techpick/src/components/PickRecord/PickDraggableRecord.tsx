@@ -1,5 +1,6 @@
 'use client';
 
+import { PICK } from '@/constants/pick';
 import { useFetchPickListByFolderId } from '@/queries/useFetchPickListByFolderId';
 import { usePickStore } from '@/stores/pickStore';
 import { useUpdatePickStore } from '@/stores/updatePickStore';
@@ -47,7 +48,7 @@ export function PickDraggableRecord({
     id: pickId,
     data: {
       id: pickId,
-      type: 'pick',
+      type: PICK,
       parentFolderId,
       pickInfo,
     },
@@ -55,7 +56,7 @@ export function PickDraggableRecord({
       currentUpdateTitlePickId === pickInfo.id ||
       currentUpdateTagPickId === pickInfo.id,
   });
-  const pickElementId = `pickId-${pickId}`;
+  const pickElementId = `${PICK}-${pickId}`;
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),

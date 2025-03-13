@@ -1,3 +1,4 @@
+import { RECOMMEND_PICK } from '@/constants/recommendPick';
 import type { RecommendPickCategoryType } from '@/types/RecommendPickCategoryType';
 import type { RecommendPickType } from '@/types/RecommendPickType';
 import { useDraggable } from '@dnd-kit/core';
@@ -11,10 +12,10 @@ export function RecommendPickDraggable({
 }: PropsWithChildren<RecommendPickDraggableProps>) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
-      id: `recommend-${recommendPickCategoryType}-${recommendPick.url}`,
+      id: `${RECOMMEND_PICK}-${recommendPickCategoryType}-${recommendPick.url}`,
       data: {
         ...recommendPick,
-        type: 'recommend',
+        type: RECOMMEND_PICK,
       },
     });
 
@@ -24,7 +25,7 @@ export function RecommendPickDraggable({
 
   return (
     <div
-      id={`recommend-${recommendPickCategoryType}-${recommendPick.url}`}
+      id={`${RECOMMEND_PICK}-${recommendPickCategoryType}-${recommendPick.url}`}
       ref={setNodeRef}
       {...attributes}
       {...listeners}

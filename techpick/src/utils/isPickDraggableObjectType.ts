@@ -1,3 +1,4 @@
+import { PICK } from '@/constants/pick';
 import type { PickDraggableObjectType } from '@/types/PickDraggableObjectType';
 
 export const isPickDraggableObject = (
@@ -8,7 +9,7 @@ export const isPickDraggableObject = (
     data === null ||
     !('id' in data) ||
     !('type' in data) ||
-    data.type !== 'pick' ||
+    data.type !== PICK ||
     !('parentFolderId' in data) ||
     !('sortable' in data) ||
     !('pickInfo' in data)
