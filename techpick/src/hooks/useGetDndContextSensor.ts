@@ -1,3 +1,6 @@
+import { FOLDER } from '@/constants/folder';
+import { PICK } from '@/constants/pick';
+import { RECOMMEND_PICK } from '@/constants/recommendPick';
 import { MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Dispatch, SetStateAction } from 'react';
 
@@ -9,9 +12,9 @@ export function useGetDndContextSensor({
 
     while (
       targetElement &&
-      !targetElement.id.includes('folder') &&
-      !targetElement.id.includes('pick') &&
-      !targetElement.id.includes('recommend')
+      !targetElement.id.includes(FOLDER) &&
+      !targetElement.id.includes(PICK) &&
+      !targetElement.id.includes(RECOMMEND_PICK)
     ) {
       targetElement = targetElement.parentElement;
     }

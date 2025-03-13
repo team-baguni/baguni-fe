@@ -1,3 +1,4 @@
+import { FOLDER } from '@/constants/folder';
 import type { PickToFolderDroppableObjectType } from '@/types/PickToFolderDroppableObjectType';
 
 export const isPickToFolderDroppableObject = (
@@ -9,5 +10,5 @@ export const isPickToFolderDroppableObject = (
 
   const { id, type } = data as Record<string, unknown>;
 
-  return typeof id !== 'undefined' && type === 'folder';
+  return typeof id !== 'undefined' && type === FOLDER;
 };

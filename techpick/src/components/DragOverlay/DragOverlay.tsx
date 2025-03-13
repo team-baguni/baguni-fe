@@ -24,7 +24,6 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   const isPickDragging = usePickStore((state) => state.isDragging);
   const draggingPickInfo = usePickStore((state) => state.draggingPickInfo);
   const selectedPickIdList = usePickStore((state) => state.selectedPickIdList);
-  const [isDragging, setIsDragging] = useState(false);
   const [draggingObjectType, setDraggingObjectType] =
     useState<DraggingObjectType>(null);
   const [draggingRecommendPickInfo, setDraggingRecommendPickInfo] =
@@ -36,7 +35,6 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const activeObject = active.data.current;
-    setIsDragging(true);
 
     if (isRecommendPickDraggableObject(activeObject)) {
       setDraggingObjectType('recommendPick');
@@ -58,7 +56,6 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   };
 
   const onDragEnd = async () => {
-    setIsDragging(false);
     setDraggingObjectType(null);
   };
 
@@ -80,10 +77,6 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   });
   const selectedPickListCount = selectedPickIdList.length - 1;
   const shadowCount = Math.min(selectedPickListCount, 5);
-
-  if (!isDragging) {
-    return null;
-  }
 
   if (isPickDragging && draggingPickInfo) {
     return (
