@@ -2,7 +2,6 @@
 
 import { useDeleteTag } from '@/queries/useDeleteTag';
 import { useDeleteTagDialogStore } from '@/stores/deleteTagDialogStore';
-import { Text } from '@/ui/Text/Text';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { type KeyboardEvent, type MouseEvent, memo, useRef } from 'react';
@@ -12,6 +11,7 @@ import {
   deleteTagCancelButtonStyle,
   dialogContentStyle,
   dialogOverlayStyle,
+  textStyle,
 } from './DeleteTagDialog.css';
 
 export const DeleteTagDialog = memo(function DeleteTagDialog() {
@@ -68,7 +68,7 @@ export const DeleteTagDialog = memo(function DeleteTagDialog() {
           className={dialogContentStyle}
           onClick={(e) => e.stopPropagation()}
         >
-          <Text>이 태그를 삭제하시겠습니까?</Text>
+          <p className={textStyle}>이 태그를 삭제하시겠습니까?</p>
 
           <VisuallyHidden.Root>
             <Dialog.Title>이 태그를 삭제하시겠습니까?</Dialog.Title>

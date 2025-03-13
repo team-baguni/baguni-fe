@@ -1,14 +1,14 @@
 'use client';
 import { ROUTES } from '@/constants/route';
-import { useFetchFolders } from '@/queries/useFetchFolders';
-import type { FolderType } from '@/types/FolderType';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/ui/Breadcrumb';
+} from '@/libs/@ui/Breadcrumb';
+import { useFetchFolders } from '@/queries/useFetchFolders';
+import type { FolderType } from '@/types/FolderType';
 import { getAncestorFolderListFromLeaf } from '@/utils/getAncestorFolderListFromLeaf';
 import Link from 'next/link';
 import {
