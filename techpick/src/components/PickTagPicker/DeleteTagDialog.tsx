@@ -1,7 +1,6 @@
 'use client';
 
 import { useDeleteTag } from '@/queries/useDeleteTag';
-import { useDeleteTagDialogStore } from '@/stores/deleteTagDialogStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { type KeyboardEvent, type MouseEvent, memo, useRef } from 'react';
@@ -13,6 +12,7 @@ import {
   dialogOverlayStyle,
   textStyle,
 } from './DeleteTagDialog.css';
+import { useDeleteTagDialogStore } from './DeleteTagDialog.store';
 
 export const DeleteTagDialog = memo(function DeleteTagDialog() {
   const deleteButtonRef = useRef<HTMLButtonElement>(null);

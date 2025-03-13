@@ -1,13 +1,13 @@
 'use client';
 
-import { useDeleteTagDialogStore } from '@/stores/deleteTagDialogStore';
 import type { TagType } from '@/types/TagType';
-import { deleteTagDialogButtonStyle } from './showDeleteTagDialogButton.css';
+import { useDeleteTagDialogStore } from './DeleteTagDialog.store';
+import { deleteTagDialogButtonStyle } from './deleteTagDialogTriggerButton.css';
 
-export function ShowDeleteTagDialogButton({
+export function DeleteTagDialogTriggerButton({
   tag,
   onClick: parentOnClick = () => {},
-}: ShowDeleteTagDialogButtonProps) {
+}: DeleteTagDialogTriggerButtonProps) {
   const { setIsOpen, setDeleteTagId } = useDeleteTagDialogStore();
 
   const showDeleteTagDialog = () => {
@@ -27,7 +27,7 @@ export function ShowDeleteTagDialogButton({
   );
 }
 
-interface ShowDeleteTagDialogButtonProps {
+interface DeleteTagDialogTriggerButtonProps {
   tag: TagType;
   onClick?: () => void;
 }
