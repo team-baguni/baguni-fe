@@ -1,9 +1,12 @@
 'use client';
 
 import { useGetDragOverStyle } from '@/hooks/useGetDragOverStyle';
-import { useFolderStore } from '@/stores/folderStore';
+import { useFetchFolders } from '@/queries/useFetchFolders';
 import { usePickStore } from '@/stores/pickStore';
+import type { FolderType } from '@/types/FolderType';
 import type { RecommendPickType } from '@/types/RecommendPickType';
+import { getFolderInfoByFolderId } from '@/utils/getFolderInfoByFolderId';
+import { isFolderDraggableObject } from '@/utils/isFolderDraggableObject';
 import { isRecommendPickDraggableObject } from '@/utils/isRecommendPickDraggableObject';
 import {
   DragOverlay as DragOverlayPrimitive,
@@ -18,7 +21,6 @@ import { PickRecordOverlay } from './PickRecordOverlay';
 import { dragCountStyle, stackedOverlayStyle } from './dragOverlay.css';
 
 export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
-  const { isDragging: isFolderDragging, draggingFolderInfo } = useFolderStore();
   const isPickDragging = usePickStore((state) => state.isDragging);
   const draggingPickInfo = usePickStore((state) => state.draggingPickInfo);
   const selectedPickIdList = usePickStore((state) => state.selectedPickIdList);
@@ -27,6 +29,9 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     useState<DraggingObjectType>(null);
   const [draggingRecommendPickInfo, setDraggingRecommendPickInfo] =
     useState<RecommendPickType | null>(null);
+  const { data: folderRecord } = useFetchFolders();
+  const [draggingFolderInfo, setDraggingFolderInfo] =
+    useState<FolderType | null>(null);
 
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -37,6 +42,18 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
       setDraggingObjectType('recommendPick');
       setDraggingRecommendPickInfo(activeObject);
       return;
+    }
+
+    if (isFolderDraggableObject(activeObject)) {
+      const folderId = Number(activeObject.id);
+      const folderInfo = getFolderInfoByFolderId({ folderId, folderRecord });
+
+      if (!folderInfo) {
+        return;
+      }
+
+      setDraggingObjectType('folder');
+      setDraggingFolderInfo(folderInfo);
     }
   };
 
@@ -54,7 +71,7 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
   });
   const { overlayStyle: folderOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
-    isDragging: isFolderDragging,
+    isDragging: draggingObjectType === 'folder',
   });
   const { overlayStyle: recommendPickOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
@@ -84,7 +101,7 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     );
   }
 
-  if (isFolderDragging && draggingFolderInfo) {
+  if (draggingObjectType === 'folder' && draggingFolderInfo) {
     return (
       <DragOverlayPrimitive style={folderOverlayStyle}>
         <FolderItemOverlay name={draggingFolderInfo.name} />
@@ -108,4 +125,4 @@ interface DargOverlayProps {
   };
 }
 
-type DraggingObjectType = 'recommendPick' | 'Pick' | 'Folder' | null;
+type DraggingObjectType = 'recommendPick' | 'pick' | 'folder' | null;
