@@ -34,8 +34,9 @@ export function FolderAndPickDndContextProvider({
       sensors={sensors}
       collisionDetection={collisionDetectionAlgorithm}
     >
-      <DndMonitorContext>{children}</DndMonitorContext>
+      <DndMonitorContext />
       <DargOverlay elementClickPosition={elementClickPosition} />
+      {children}
     </DndContext>
   );
 }
