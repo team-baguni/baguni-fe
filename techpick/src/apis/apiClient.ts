@@ -1,4 +1,7 @@
-import { ERROR_MESSAGE_JSON } from '@/constants/errorMessageJson';
+import {
+  ERROR_MESSAGE_JSON,
+  type ErrorMessageKeyType,
+} from '@/constants/errorMessageJson';
 import { getAccessToken } from '@/utils/getAccessToken';
 import { notifyError } from '@/utils/toast';
 import * as Sentry from '@sentry/nextjs';
@@ -36,7 +39,7 @@ export const apiClient = ky.create({
           });
 
           const parsedErrorMessage = error.message.split(' ');
-          const errorCode = parsedErrorMessage.shift();
+          const errorCode = parsedErrorMessage.shift() as ErrorMessageKeyType;
 
           if (errorCode && ERROR_MESSAGE_JSON[errorCode]) {
             if (errorCode === 'UNKNOWN') {

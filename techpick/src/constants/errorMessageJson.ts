@@ -1,4 +1,4 @@
-export const ERROR_MESSAGE_JSON: { [key: string]: string } = {
+export const ERROR_MESSAGE_JSON = {
   'AU-001': '로그인 정보가 확인되지 않았습니다.\n로그인 후 다시 시도해주세요.',
   'U-000': '잘못된 정보입니다',
   'U-002': '중복된 사용자 이름입니다.',
@@ -25,4 +25,6 @@ export const ERROR_MESSAGE_JSON: { [key: string]: string } = {
   'LI-002': '이미 존재하는 링크입니다.',
   'LI-003': '이 링크는 넣을 수 없습니다. ㅠㅠ',
   UNKNOWN: '죄송합니다. 서버에서 알 수 없는 에러가 발생했습니다.',
-};
+} as const;
+
+export type ErrorMessageKeyType = keyof typeof ERROR_MESSAGE_JSON;
