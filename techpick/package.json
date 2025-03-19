@@ -7,7 +7,7 @@
     "dev:https": "dotenv -e .env.development -- bash -c 'yarn next dev -H $NEXT_PUBLIC_DOMAIN -p 3000 --experimental-https'",
     "build": "next build",
     "start": "next start",
-    "lint": "biome lint ./src",
+    "lint": "biome lint --diagnostic-level=warn ./src",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "yarn jest",
