@@ -7,11 +7,11 @@ import { formatDateString } from '@/utils/formatDateString';
 import { getFilteredSelectedTagList } from '@/utils/getFilteredSelectedTagList';
 import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
 import Image from 'next/image';
-import { PickDateColumnLayout } from '../PickRecord/PickDateColumnLayout';
-import { PickImageColumnLayout } from '../PickRecord/PickImageColumnLayout';
-import { PickTagColumnLayout } from '../PickRecord/PickTagColumnLayout';
-import { PickTitleColumnLayout } from '../PickRecord/PickTitleColumnLayout';
-import { Separator } from '../PickRecord/Separator';
+import { PickDateColumnLayout } from '../../PickRecord/PickDateColumnLayout';
+import { PickImageColumnLayout } from '../../PickRecord/PickImageColumnLayout';
+import { PickTagColumnLayout } from '../../PickRecord/PickTagColumnLayout';
+import { PickTitleColumnLayout } from '../../PickRecord/PickTitleColumnLayout';
+import { Separator } from '../../PickRecord/Separator';
 import {
   backgroundImageStyle,
   dateTextStyle,
@@ -20,8 +20,8 @@ import {
   linkLayoutStyle,
   pickImageStyle,
   pickTitleSectionStyle,
-} from '../PickRecord/pickRecord.css';
-import { PickTagPicker } from '../PickTagPicker/PickTagPicker';
+} from '../../PickRecord/pickRecord.css';
+import { PickTagPicker } from '../../PickTagPicker/PickTagPicker';
 import { pickRecordOverlayLayoutStyle } from './pickRecordOverlay.css';
 
 export function PickRecordOverlay({ pickInfo }: PickViewItemComponentProps) {

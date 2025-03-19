@@ -2,7 +2,7 @@ import { getBasicFolders } from '@/apis/folder/getBasicFolders';
 import { getFolders } from '@/apis/folder/getFolders';
 import { getTagList } from '@/apis/tag/getTagList';
 import { FeedbackToolbar } from '@/components/FeedbackToolbar';
-import { FolderAndPickDndContextProvider } from '@/components/FolderAndPickDndContextProvider';
+import { FolderAndPickDndContextProvider } from '@/components/FolderAndPickDndContextProvider/FolderAndPickDndContextProvider';
 import { MobileNavigationBar } from '@/components/MobileNavigationBar';
 import ShortcutKey from '@/components/ShortcutKey';
 import { SideNavigationBar } from '@/components/SideNavigationBar/SideNavigationBar';

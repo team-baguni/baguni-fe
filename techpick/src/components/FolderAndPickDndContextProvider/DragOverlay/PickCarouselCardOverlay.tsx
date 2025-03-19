@@ -8,7 +8,7 @@ import {
   pickCarouselItemStyle,
   pickImageStyle,
   pickTitleStyle,
-} from '../RecommendedPickCarousel/pickCarouselCard.css';
+} from '../../RecommendedPickCarousel/pickCarouselCard.css';
 
 export function PickCarouselCardOverlay({
   recommendPick,

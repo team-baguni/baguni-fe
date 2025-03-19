@@ -1,10 +1,10 @@
 'use client';
+import { useGetActiveNavigationItemId } from '@/hooks/useGetActiveNavigationItemId';
 import { useMovePicksToEqualFolder } from '@/queries/useMovePicksToEqualFolder';
 import { usePickStore } from '@/stores/pickStore';
 import { isPickDraggableObject } from '@/utils/isPickDraggableObjectType';
 import { useDndMonitor } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { useGetActiveNavigationItemId } from './useGetActiveNavigationItemId';
 
 /**
  * @description pick에서 pick으로 dnd를 할 때의 이벤트를 감지하고 동작하는 hook입니다.
