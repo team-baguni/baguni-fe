@@ -30,7 +30,8 @@
         "all": true,
         "noBarrelFile": "error",
         "noReExportAll": "error"
-      }
+      },
+      "style": { "noNonNullAssertion": "info" }
     }
   },
   "javascript": {
