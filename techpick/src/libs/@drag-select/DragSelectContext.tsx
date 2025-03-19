@@ -80,9 +80,11 @@ export function DragSelectContext({
   }, []);
 
   const getContainerScrollOffset = useCallback((container: HTMLElement) => {
+    const { top, left } = container.getBoundingClientRect();
+
     return {
-      scrollLeft: container.scrollLeft,
-      scrollTop: container.scrollTop,
+      scrollLeft: container.scrollLeft + left,
+      scrollTop: container.scrollTop + top,
     };
   }, []);
 
@@ -93,7 +95,7 @@ export function DragSelectContext({
         : { scrollLeft: window.scrollX, scrollTop: window.scrollY };
 
       return {
-        x: event.clientX + scrollLeft,
+        x: event.clientX - scrollLeft,
         y: event.clientY + scrollTop,
       };
     },
