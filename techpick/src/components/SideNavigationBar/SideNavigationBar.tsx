@@ -31,7 +31,7 @@ export function SideNavigationBar() {
   return (
     <HorizontalResizableContainer>
       <ActiveNavigationItemIdProvider>
-        <div className={sideNavigationBarLayoutStyle}>
+        <nav className={sideNavigationBarLayoutStyle}>
           <SearchBar />
           <BasicNavigationItemList />
           <div className={sideNavigationTitleLayoutStyle}>
@@ -69,7 +69,7 @@ export function SideNavigationBar() {
           <div className={topBorderColor}>
             <MyPageNavigationItem />
           </div>
-        </div>
+        </nav>
       </ActiveNavigationItemIdProvider>
     </HorizontalResizableContainer>
   );

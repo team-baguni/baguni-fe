@@ -2,7 +2,7 @@ import { keyframes, style } from '@vanilla-extract/css';
 import { colorVars } from 'techpick-shared';
 
 export const feedbackToolbarStyle = style({
-  position: 'absolute',
+  position: 'fixed',
   bottom: '32px',
   right: '16px',
   display: 'flex',
