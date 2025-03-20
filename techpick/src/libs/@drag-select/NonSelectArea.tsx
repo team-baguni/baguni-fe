@@ -1,5 +1,4 @@
 import type { PointerEvent, PropsWithChildren } from 'react';
-import { nonSelectAreaStyle } from './nonSelectArea.css';
 
 export const NonSelectArea = ({ children }: PropsWithChildren) => {
   const handlePointerDown = (e: PointerEvent) => {
@@ -7,7 +6,7 @@ export const NonSelectArea = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <div onPointerDown={handlePointerDown} className={nonSelectAreaStyle}>
+    <div onPointerDown={handlePointerDown} data-non-drag-selectable>
       {children}
     </div>
   );

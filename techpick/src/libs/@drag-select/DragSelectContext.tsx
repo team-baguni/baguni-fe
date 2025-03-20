@@ -116,6 +116,12 @@ export function DragSelectContext({
         '[data-drag-selectable-container]',
       );
 
+      const isNonDraggableElement = target.closest('data-non-drag-selectable');
+
+      if (isNonDraggableElement) {
+        return;
+      }
+
       dispatch({
         type: 'onDragSelectStart',
         event: { startPositionCoordinate: startCoordinate },
