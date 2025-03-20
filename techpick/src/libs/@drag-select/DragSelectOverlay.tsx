@@ -7,9 +7,9 @@ import { useDragSelectMonitor } from './useDragSelectMonitor';
 export function DragSelectOverlay(props: ComponentPropsWithoutRef<'div'>) {
   const { style: propsStyle, ...otherProps } = props;
   const [startPositionCoordinate, setStartPositionCoordinate] =
-    useState<CoordinateType | null>({ x: 0, y: 0 });
+    useState<CoordinateType | null>(null);
   const [currentPositionCoordinate, setCurrentPositionCoordinate] =
-    useState<CoordinateType | null>({ x: 0, y: 0 });
+    useState<CoordinateType | null>(null);
 
   useDragSelectMonitor({
     onDragSelectStart({ startPositionCoordinate }) {
@@ -42,8 +42,6 @@ export function DragSelectOverlay(props: ComponentPropsWithoutRef<'div'>) {
   const rectHeight = Math.abs(
     startPositionCoordinate.y - currentPositionCoordinate.y,
   );
-
-  console.log('rectX', rectX);
 
   const style: React.CSSProperties = {
     position: 'absolute',
