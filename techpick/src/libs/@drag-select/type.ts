@@ -10,11 +10,11 @@ export interface RectType {
   y2: number;
 }
 
-interface DragSelectEvent {
+export interface DragSelectEvent {
   startPositionCoordinate: CoordinateType;
 }
 
-interface DragSelectMoveEvent extends DragSelectEvent {
+export interface DragSelectMoveEvent extends DragSelectEvent {
   currentPositionCoordinate: CoordinateType;
   elementList: HTMLElement[];
 }

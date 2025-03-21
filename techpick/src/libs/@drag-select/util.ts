@@ -12,10 +12,34 @@ export const createRectFromPoints = (
   return { x1, y1, x2, y2 };
 };
 
+export const getContainerScrollOffset = (container: HTMLElement) => {
+  const { top, left } = container.getBoundingClientRect();
+
+  return {
+    scrollLeft: container.scrollLeft + left,
+    scrollTop: container.scrollTop + top,
+  };
+};
+
+export const getAbsoluteCoordinates = (
+  event: PointerEvent | MouseEvent,
+  container?: HTMLElement,
+) => {
+  const { scrollLeft, scrollTop } = container
+    ? getContainerScrollOffset(container)
+    : { scrollLeft: window.scrollX, scrollTop: window.scrollY };
+
+  return {
+    x: event.clientX - scrollLeft,
+    y: event.clientY + scrollTop,
+  };
+};
+
 interface IsInRectParameter {
   element: HTMLElement;
   container: HTMLElement;
   rect: RectType;
+  weakMap: WeakMap<HTMLElement, DOMRect>;
 }
 
 /**
@@ -24,8 +48,26 @@ interface IsInRectParameter {
  * @param container 스크롤이 존재하는 영역입니다. 뷰포트를 넘었을 때의 계산을 위해 필요합니다.
  * @returns
  */
-export const isInRect = ({ element, container, rect }: IsInRectParameter) => {
-  const elRect = element.getBoundingClientRect();
+export const isInRect = ({
+  element,
+  container,
+  rect,
+  weakMap,
+}: IsInRectParameter) => {
+  let elRect = weakMap.has(element)
+    ? weakMap.get(element)
+    : element.getBoundingClientRect();
+
+  if (weakMap.has(element)) {
+    elRect = weakMap.get(element);
+  } else {
+    elRect = element.getBoundingClientRect();
+    weakMap.set(element, elRect);
+  }
+
+  if (!elRect) {
+    return false;
+  }
 
   // 스크롤 값을 고려한 절대 좌표 계산
   const left = elRect.left + container.scrollLeft;
@@ -51,4 +93,37 @@ export const isInRect = ({ element, container, rect }: IsInRectParameter) => {
     (top <= xTop && xBottom <= bottom);
 
   return isXIntersecting && isYIntersecting;
+};
+
+interface GetElementsInRectParameter {
+  rect: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  };
+  dragSelectContextContainer: HTMLElement;
+  container: HTMLElement;
+  weakMap: WeakMap<HTMLElement, DOMRect>;
+}
+
+export const getElementsInRect = ({
+  rect,
+  container,
+  dragSelectContextContainer,
+  weakMap,
+}: GetElementsInRectParameter): HTMLElement[] => {
+  if (!dragSelectContextContainer || !container) {
+    return [];
+  }
+
+  const elements = Array.from(
+    dragSelectContextContainer.querySelectorAll<HTMLElement>(
+      '[data-draggable]',
+    ),
+  );
+
+  return elements.filter((element) =>
+    isInRect({ rect, element, container, weakMap }),
+  );
 };

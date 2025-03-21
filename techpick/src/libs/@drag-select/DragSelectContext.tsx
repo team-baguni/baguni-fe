@@ -8,13 +8,18 @@ import {
   useState,
 } from 'react';
 import { DragSelectContainer } from './DragSelectContainer';
+import { MOUSE_LEFT_CLICK } from './constant';
 import { DragSelectMonitorContext } from './context';
 import type {
   CoordinateType,
   DragSelectMonitorEvent,
   DragSelectMonitorListener,
 } from './type';
-import { createRectFromPoints, isInRect } from './util';
+import {
+  createRectFromPoints,
+  getAbsoluteCoordinates,
+  getElementsInRect,
+} from './util';
 
 interface DragSelectContextProps extends DragSelectMonitorListener {
   container?: HTMLElement;
@@ -28,6 +33,8 @@ export function DragSelectContext({
   onDragSelectEnd = () => {},
 }: PropsWithChildren<DragSelectContextProps>) {
   const dragSelectContainerRef = useRef<HTMLElement | null>(null);
+  const elementPositionCache = useRef(new WeakMap<HTMLElement, DOMRect>());
+
   const [listeners] = useState(
     () =>
       new Set<DragSelectMonitorListener>([
@@ -57,59 +64,19 @@ export function DragSelectContext({
     [listeners],
   );
 
-  const getElementsInRect = useCallback(function getElementsInRect(
-    rect: {
-      x1: number;
-      y1: number;
-      x2: number;
-      y2: number;
-    },
-    container: HTMLElement,
-  ): HTMLElement[] {
-    const dragSelectContainer = dragSelectContainerRef.current;
-
-    if (!dragSelectContainer || !container) {
-      return [];
-    }
-
-    const elements = Array.from(
-      dragSelectContainer.querySelectorAll<HTMLElement>('[data-draggable]'),
-    );
-
-    return elements.filter((element) => isInRect({ rect, element, container }));
-  }, []);
-
-  const getContainerScrollOffset = useCallback((container: HTMLElement) => {
-    const { top, left } = container.getBoundingClientRect();
-
-    return {
-      scrollLeft: container.scrollLeft + left,
-      scrollTop: container.scrollTop + top,
-    };
-  }, []);
-
-  const getAbsoluteCoordinates = useCallback(
-    (event: PointerEvent, container?: HTMLElement) => {
-      const { scrollLeft, scrollTop } = container
-        ? getContainerScrollOffset(container)
-        : { scrollLeft: window.scrollX, scrollTop: window.scrollY };
-
-      return {
-        x: event.clientX - scrollLeft,
-        y: event.clientY + scrollTop,
-      };
-    },
-    [getContainerScrollOffset],
-  );
-
   useEffect(() => {
     if (!container) {
       return;
     }
 
     let startCoordinate: CoordinateType | null = null;
+    let pointerEvent: PointerEvent | null = null;
 
     const handlePointerDown = (event: PointerEvent) => {
+      if (event.button !== MOUSE_LEFT_CLICK) {
+        return;
+      }
+
       startCoordinate = getAbsoluteCoordinates(event, container);
       const target = event.target as HTMLElement;
       dragSelectContainerRef.current = target.closest(
@@ -117,6 +84,7 @@ export function DragSelectContext({
       );
 
       const isNonDraggableElement = target.closest('data-non-drag-selectable');
+      elementPositionCache.current = new WeakMap<HTMLElement, DOMRect>();
 
       if (isNonDraggableElement) {
         return;
@@ -128,22 +96,42 @@ export function DragSelectContext({
       });
     };
 
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!startCoordinate) {
-        return;
-      }
+    const handlePointerMove = (event: Event) => {
+      requestAnimationFrame(() => {
+        if (!startCoordinate) {
+          return;
+        }
 
-      const currentCoordinate = getAbsoluteCoordinates(event, container);
-      const rect = createRectFromPoints(startCoordinate, currentCoordinate);
-      const elements = getElementsInRect(rect, container);
+        if (event instanceof PointerEvent) {
+          pointerEvent = event;
+        }
 
-      dispatch({
-        type: 'onDragSelectMove',
-        event: {
-          currentPositionCoordinate: currentCoordinate,
-          startPositionCoordinate: startCoordinate,
-          elementList: elements,
-        },
+        if (!pointerEvent) {
+          return;
+        }
+
+        const currentCoordinate = getAbsoluteCoordinates(
+          pointerEvent,
+          container,
+        );
+        const rect = createRectFromPoints(startCoordinate, currentCoordinate);
+        const elements = dragSelectContainerRef.current
+          ? getElementsInRect({
+              rect,
+              container,
+              dragSelectContextContainer: dragSelectContainerRef.current,
+              weakMap: elementPositionCache.current,
+            })
+          : [];
+
+        dispatch({
+          type: 'onDragSelectMove',
+          event: {
+            currentPositionCoordinate: currentCoordinate,
+            startPositionCoordinate: startCoordinate,
+            elementList: elements,
+          },
+        });
       });
     };
 
@@ -154,7 +142,14 @@ export function DragSelectContext({
 
       const currentCoordinate = getAbsoluteCoordinates(event);
       const rect = createRectFromPoints(startCoordinate, currentCoordinate);
-      const elements = getElementsInRect(rect, container);
+      const elements = dragSelectContainerRef.current
+        ? getElementsInRect({
+            rect,
+            container,
+            dragSelectContextContainer: dragSelectContainerRef.current,
+            weakMap: elementPositionCache.current,
+          })
+        : [];
 
       dispatch({
         type: 'onDragSelectEnd',
@@ -168,16 +163,18 @@ export function DragSelectContext({
       startCoordinate = null;
     };
 
-    window.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
+    container.addEventListener('pointerdown', handlePointerDown);
+    container.addEventListener('pointermove', handlePointerMove);
+    container.addEventListener('pointerup', handlePointerUp);
+    container.addEventListener('scroll', handlePointerMove, { passive: true });
 
     return () => {
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
+      container.removeEventListener('pointerdown', handlePointerDown);
+      container.removeEventListener('pointermove', handlePointerMove);
+      container.removeEventListener('pointerup', handlePointerUp);
+      container.removeEventListener('scroll', handlePointerMove);
     };
-  }, [dispatch, getElementsInRect, getAbsoluteCoordinates, container]);
+  }, [dispatch, container]);
 
   return (
     <DragSelectContainer>
