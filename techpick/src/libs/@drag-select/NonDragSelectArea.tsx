@@ -1,6 +1,6 @@
 import type { PointerEvent, PropsWithChildren } from 'react';
 
-export const NonSelectArea = ({ children }: PropsWithChildren) => {
+export const NonDragSelectArea = ({ children }: PropsWithChildren) => {
   const handlePointerDown = (e: PointerEvent) => {
     e.stopPropagation();
   };

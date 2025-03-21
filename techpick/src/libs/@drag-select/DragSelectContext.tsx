@@ -77,18 +77,22 @@ export function DragSelectContext({
         return;
       }
 
-      startCoordinate = getAbsoluteCoordinates(event, container);
       const target = event.target as HTMLElement;
+
+      const isNonDraggableElement = !!target.closest(
+        '[data-non-drag-selectable]',
+      );
+      if (isNonDraggableElement) {
+        return;
+      }
+
+      startCoordinate = getAbsoluteCoordinates(event, container);
+
       dragSelectContainerRef.current = target.closest(
         '[data-drag-selectable-container]',
       );
 
-      const isNonDraggableElement = target.closest('data-non-drag-selectable');
       elementPositionCache.current = new WeakMap<HTMLElement, DOMRect>();
-
-      if (isNonDraggableElement) {
-        return;
-      }
 
       dispatch({
         type: 'onDragSelectStart',
