@@ -18,7 +18,7 @@ import type {
   DragSelectMonitorEvent,
   DragSelectMonitorListener,
   DragSelectableItemData,
-  DragSelectableItemsWeakMapKey,
+  DragSelectableItemsMapKey,
 } from './type';
 import {
   createRectFromPoints,
@@ -37,8 +37,8 @@ export function DragSelectContext({
   onDragSelectMove = () => {},
   onDragSelectEnd = () => {},
 }: PropsWithChildren<DragSelectContextProps>) {
-  const [dragSelectableItemsWeakMap] = useState(
-    new Map<DragSelectableItemsWeakMapKey, DragSelectableItemData>(),
+  const [dragSelectableItemsMap] = useState(
+    new Map<DragSelectableItemsMapKey, DragSelectableItemData>(),
   );
   const [dragSelectItems] = useState<DragSelectItems>([]);
   const [listeners] = useState(
@@ -48,8 +48,8 @@ export function DragSelectContext({
       ]),
   );
   const internalData = useMemo(
-    () => ({ dragSelectItems, dragSelectableItemsWeakMap, container }),
-    [dragSelectItems, dragSelectableItemsWeakMap, container],
+    () => ({ dragSelectItems, dragSelectableItemsMap, container }),
+    [dragSelectItems, dragSelectableItemsMap, container],
   );
 
   const register = useCallback(
@@ -126,7 +126,7 @@ export function DragSelectContext({
         const dragSelectData = getDragSelectInRect({
           container,
           rect,
-          dragSelectableItemsWeakMap,
+          dragSelectableItemsMap,
           dragSelectItems,
         });
 
@@ -151,7 +151,7 @@ export function DragSelectContext({
       const dragSelectData = getDragSelectInRect({
         container,
         rect,
-        dragSelectableItemsWeakMap,
+        dragSelectableItemsMap,
         dragSelectItems,
       });
 
@@ -178,7 +178,7 @@ export function DragSelectContext({
       container.removeEventListener('pointerup', handlePointerUp);
       container.removeEventListener('scroll', handlePointerMove);
     };
-  }, [dispatch, container, dragSelectableItemsWeakMap, dragSelectItems]);
+  }, [dispatch, container, dragSelectableItemsMap, dragSelectItems]);
 
   return (
     <DragSelectMonitorContext.Provider value={register}>

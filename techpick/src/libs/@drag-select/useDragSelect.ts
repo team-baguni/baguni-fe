@@ -9,7 +9,7 @@ interface UseDragSelectParam {
 }
 
 export function useDragSelect({ id, data = {} }: UseDragSelectParam) {
-  const { dragSelectItems, dragSelectableItemsWeakMap } =
+  const { dragSelectItems, dragSelectableItemsMap } =
     useInternalDragSelectData();
 
   const setNodeRef = useCallback(
@@ -18,13 +18,13 @@ export function useDragSelect({ id, data = {} }: UseDragSelectParam) {
         return;
       }
 
-      const hasItem = dragSelectableItemsWeakMap.get(id);
+      const hasItem = dragSelectableItemsMap.get(id);
       if (!hasItem) {
         dragSelectItems.push(id);
-        dragSelectableItemsWeakMap.set(id, { data, node });
+        dragSelectableItemsMap.set(id, { data, node });
       }
     },
-    [id, data, dragSelectableItemsWeakMap, dragSelectItems],
+    [id, data, dragSelectableItemsMap, dragSelectItems],
   );
 
   return { setNodeRef };

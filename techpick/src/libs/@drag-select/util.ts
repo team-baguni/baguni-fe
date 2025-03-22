@@ -2,7 +2,7 @@ import type {
   CoordinateType,
   DragSelectItems,
   DragSelectableItemData,
-  DragSelectableItemsWeakMapKey,
+  DragSelectableItemsMapKey,
   RectType,
 } from './type';
 
@@ -88,8 +88,8 @@ export const isElementInRect = ({
 
 interface GetDragSelectInRectParameter {
   rect: RectType;
-  dragSelectableItemsWeakMap: Map<
-    DragSelectableItemsWeakMapKey,
+  dragSelectableItemsMap: Map<
+    DragSelectableItemsMapKey,
     DragSelectableItemData
   >;
   dragSelectItems: DragSelectItems;
@@ -100,7 +100,7 @@ export const getDragSelectInRect = ({
   rect,
   container,
   dragSelectItems,
-  dragSelectableItemsWeakMap,
+  dragSelectableItemsMap,
 }: GetDragSelectInRectParameter) => {
   if (!container) {
     return [];
@@ -109,7 +109,7 @@ export const getDragSelectInRect = ({
   const elements: DragSelectableItemData[] = [];
 
   for (const id of dragSelectItems) {
-    const data = dragSelectableItemsWeakMap.get(id);
+    const data = dragSelectableItemsMap.get(id);
 
     if (data) {
       elements.push(data);

@@ -47,15 +47,15 @@ export interface DragSelectableItemData {
   data: Record<string, any>;
 }
 
-export type DragSelectableItemsWeakMapKey = UniqueId;
+export type DragSelectableItemsMapKey = UniqueId;
 export type DragSelectItems = UniqueId[];
-export type DragSelectableItemsWeakMap = Map<
-  DragSelectableItemsWeakMapKey,
+export type DragSelectableItemsMap = Map<
+  DragSelectableItemsMapKey,
   DragSelectableItemData
 >;
 
 export interface DragSelectInternalContextType {
-  dragSelectableItemsWeakMap: DragSelectableItemsWeakMap;
+  dragSelectableItemsMap: DragSelectableItemsMap;
   dragSelectItems: DragSelectItems;
   container: HTMLElement;
 }
