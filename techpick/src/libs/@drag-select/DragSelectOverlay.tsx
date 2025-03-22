@@ -3,6 +3,7 @@
 import { type ComponentPropsWithoutRef, useState } from 'react';
 import type { CoordinateType } from './type';
 import { useDragSelectMonitor } from './useDragSelectMonitor';
+import { useInternalDragSelectData } from './useInternalDragSelectData';
 
 export function DragSelectOverlay(props: ComponentPropsWithoutRef<'div'>) {
   const { style: propsStyle, ...otherProps } = props;
@@ -10,6 +11,7 @@ export function DragSelectOverlay(props: ComponentPropsWithoutRef<'div'>) {
     useState<CoordinateType | null>(null);
   const [currentPositionCoordinate, setCurrentPositionCoordinate] =
     useState<CoordinateType | null>(null);
+  const { container } = useInternalDragSelectData();
 
   useDragSelectMonitor({
     onDragSelectStart({ startPositionCoordinate }) {
@@ -36,8 +38,15 @@ export function DragSelectOverlay(props: ComponentPropsWithoutRef<'div'>) {
     startPositionCoordinate.y,
     currentPositionCoordinate.y,
   );
-  const rectWidth = Math.abs(
-    startPositionCoordinate.x - currentPositionCoordinate.x,
+  const containerRect = container.getBoundingClientRect();
+  const maxWidth =
+    document.documentElement.clientWidth -
+    (containerRect.left +
+      rectX +
+      (document.documentElement.clientWidth - containerRect.right));
+  const rectWidth = Math.min(
+    Math.abs(startPositionCoordinate.x - currentPositionCoordinate.x),
+    maxWidth,
   );
   const rectHeight = Math.abs(
     startPositionCoordinate.y - currentPositionCoordinate.y,

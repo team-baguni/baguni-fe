@@ -48,8 +48,8 @@ export function DragSelectContext({
       ]),
   );
   const internalData = useMemo(
-    () => ({ dragSelectItems, dragSelectableItemsWeakMap }),
-    [dragSelectItems, dragSelectableItemsWeakMap],
+    () => ({ dragSelectItems, dragSelectableItemsWeakMap, container }),
+    [dragSelectItems, dragSelectableItemsWeakMap, container],
   );
 
   const register = useCallback(
@@ -129,8 +129,6 @@ export function DragSelectContext({
           dragSelectableItemsWeakMap,
           dragSelectItems,
         });
-
-        console.log('dragSelectData', dragSelectData);
 
         dispatch({
           type: 'onDragSelectMove',

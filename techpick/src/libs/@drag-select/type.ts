@@ -57,4 +57,5 @@ export type DragSelectableItemsWeakMap = Map<
 export interface DragSelectInternalContextType {
   dragSelectableItemsWeakMap: DragSelectableItemsWeakMap;
   dragSelectItems: DragSelectItems;
+  container: HTMLElement;
 }
