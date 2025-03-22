@@ -1,4 +1,10 @@
-import type { CoordinateType, RectType } from './type';
+import type {
+  CoordinateType,
+  DragSelectItems,
+  DragSelectableItemData,
+  DragSelectableItemsWeakMapKey,
+  RectType,
+} from './type';
 
 export const createRectFromPoints = (
   p1: CoordinateType,
@@ -35,11 +41,10 @@ export const getAbsoluteCoordinates = (
   };
 };
 
-interface IsInRectParameter {
+interface IsElementInRectParameter {
   element: HTMLElement;
   container: HTMLElement;
   rect: RectType;
-  weakMap: WeakMap<HTMLElement, DOMRect>;
 }
 
 /**
@@ -48,32 +53,18 @@ interface IsInRectParameter {
  * @param container 스크롤이 존재하는 영역입니다. 뷰포트를 넘었을 때의 계산을 위해 필요합니다.
  * @returns
  */
-export const isInRect = ({
+export const isElementInRect = ({
   element,
   container,
   rect,
-  weakMap,
-}: IsInRectParameter) => {
-  let elRect = weakMap.has(element)
-    ? weakMap.get(element)
-    : element.getBoundingClientRect();
-
-  if (weakMap.has(element)) {
-    elRect = weakMap.get(element);
-  } else {
-    elRect = element.getBoundingClientRect();
-    weakMap.set(element, elRect);
-  }
-
-  if (!elRect) {
-    return false;
-  }
-
+}: IsElementInRectParameter) => {
   // 스크롤 값을 고려한 절대 좌표 계산
-  const left = elRect.left + container.scrollLeft;
-  const right = elRect.right + container.scrollLeft;
-  const top = elRect.top + container.scrollTop;
-  const bottom = elRect.bottom + container.scrollTop;
+
+  const elementRect = element.getBoundingClientRect();
+  const left = elementRect.left + container.scrollLeft;
+  const right = elementRect.right + container.scrollLeft;
+  const top = elementRect.top + container.scrollTop;
+  const bottom = elementRect.bottom + container.scrollTop;
 
   const xLeft = rect.x1;
   const xRight = rect.x2;
@@ -95,35 +86,37 @@ export const isInRect = ({
   return isXIntersecting && isYIntersecting;
 };
 
-interface GetElementsInRectParameter {
-  rect: {
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-  };
-  dragSelectContextContainer: HTMLElement;
+interface GetDragSelectInRectParameter {
+  rect: RectType;
+  dragSelectableItemsWeakMap: Map<
+    DragSelectableItemsWeakMapKey,
+    DragSelectableItemData
+  >;
+  dragSelectItems: DragSelectItems;
   container: HTMLElement;
-  weakMap: WeakMap<HTMLElement, DOMRect>;
 }
 
-export const getElementsInRect = ({
+export const getDragSelectInRect = ({
   rect,
   container,
-  dragSelectContextContainer,
-  weakMap,
-}: GetElementsInRectParameter): HTMLElement[] => {
-  if (!dragSelectContextContainer || !container) {
+  dragSelectItems,
+  dragSelectableItemsWeakMap,
+}: GetDragSelectInRectParameter) => {
+  if (!container) {
     return [];
   }
 
-  const elements = Array.from(
-    dragSelectContextContainer.querySelectorAll<HTMLElement>(
-      '[data-draggable]',
-    ),
-  );
+  const elements: DragSelectableItemData[] = [];
+
+  for (const id of dragSelectItems) {
+    const data = dragSelectableItemsWeakMap.get(id);
+
+    if (data) {
+      elements.push(data);
+    }
+  }
 
   return elements.filter((element) =>
-    isInRect({ rect, element, container, weakMap }),
+    isElementInRect({ element: element.node, container, rect }),
   );
 };

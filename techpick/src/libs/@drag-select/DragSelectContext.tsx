@@ -4,21 +4,26 @@ import {
   type PropsWithChildren,
   useCallback,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from 'react';
-import { DragSelectContainer } from './DragSelectContainer';
 import { MOUSE_LEFT_CLICK } from './constant';
-import { DragSelectMonitorContext } from './context';
+import {
+  DragSelectMonitorContext,
+  InternalDragSelectDataContext,
+} from './context';
 import type {
   CoordinateType,
+  DragSelectItems,
   DragSelectMonitorEvent,
   DragSelectMonitorListener,
+  DragSelectableItemData,
+  DragSelectableItemsWeakMapKey,
 } from './type';
 import {
   createRectFromPoints,
   getAbsoluteCoordinates,
-  getElementsInRect,
+  getDragSelectInRect,
 } from './util';
 
 interface DragSelectContextProps extends DragSelectMonitorListener {
@@ -32,17 +37,22 @@ export function DragSelectContext({
   onDragSelectMove = () => {},
   onDragSelectEnd = () => {},
 }: PropsWithChildren<DragSelectContextProps>) {
-  const dragSelectContainerRef = useRef<HTMLElement | null>(null);
-  const elementPositionCache = useRef(new WeakMap<HTMLElement, DOMRect>());
-
+  const [dragSelectableItemsWeakMap] = useState(
+    new Map<DragSelectableItemsWeakMapKey, DragSelectableItemData>(),
+  );
+  const [dragSelectItems] = useState<DragSelectItems>([]);
   const [listeners] = useState(
     () =>
       new Set<DragSelectMonitorListener>([
         { onDragSelectStart, onDragSelectMove, onDragSelectEnd },
       ]),
   );
+  const internalData = useMemo(
+    () => ({ dragSelectItems, dragSelectableItemsWeakMap }),
+    [dragSelectItems, dragSelectableItemsWeakMap],
+  );
 
-  const registerListener = useCallback(
+  const register = useCallback(
     (listener: DragSelectMonitorListener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
@@ -88,12 +98,6 @@ export function DragSelectContext({
 
       startCoordinate = getAbsoluteCoordinates(event, container);
 
-      dragSelectContainerRef.current = target.closest(
-        '[data-drag-selectable-container]',
-      );
-
-      elementPositionCache.current = new WeakMap<HTMLElement, DOMRect>();
-
       dispatch({
         type: 'onDragSelectStart',
         event: { startPositionCoordinate: startCoordinate },
@@ -119,21 +123,21 @@ export function DragSelectContext({
           container,
         );
         const rect = createRectFromPoints(startCoordinate, currentCoordinate);
-        const elements = dragSelectContainerRef.current
-          ? getElementsInRect({
-              rect,
-              container,
-              dragSelectContextContainer: dragSelectContainerRef.current,
-              weakMap: elementPositionCache.current,
-            })
-          : [];
+        const dragSelectData = getDragSelectInRect({
+          container,
+          rect,
+          dragSelectableItemsWeakMap,
+          dragSelectItems,
+        });
+
+        console.log('dragSelectData', dragSelectData);
 
         dispatch({
           type: 'onDragSelectMove',
           event: {
             currentPositionCoordinate: currentCoordinate,
             startPositionCoordinate: startCoordinate,
-            elementList: elements,
+            dragSelectData,
           },
         });
       });
@@ -146,21 +150,19 @@ export function DragSelectContext({
 
       const currentCoordinate = getAbsoluteCoordinates(event);
       const rect = createRectFromPoints(startCoordinate, currentCoordinate);
-      const elements = dragSelectContainerRef.current
-        ? getElementsInRect({
-            rect,
-            container,
-            dragSelectContextContainer: dragSelectContainerRef.current,
-            weakMap: elementPositionCache.current,
-          })
-        : [];
+      const dragSelectData = getDragSelectInRect({
+        container,
+        rect,
+        dragSelectableItemsWeakMap,
+        dragSelectItems,
+      });
 
       dispatch({
         type: 'onDragSelectEnd',
         event: {
           currentPositionCoordinate: currentCoordinate,
           startPositionCoordinate: startCoordinate,
-          elementList: elements,
+          dragSelectData,
         },
       });
 
@@ -178,13 +180,13 @@ export function DragSelectContext({
       container.removeEventListener('pointerup', handlePointerUp);
       container.removeEventListener('scroll', handlePointerMove);
     };
-  }, [dispatch, container]);
+  }, [dispatch, container, dragSelectableItemsWeakMap, dragSelectItems]);
 
   return (
-    <DragSelectContainer>
-      <DragSelectMonitorContext.Provider value={registerListener}>
+    <DragSelectMonitorContext.Provider value={register}>
+      <InternalDragSelectDataContext.Provider value={internalData}>
         {children}
-      </DragSelectMonitorContext.Provider>
-    </DragSelectContainer>
+      </InternalDragSelectDataContext.Provider>
+    </DragSelectMonitorContext.Provider>
   );
 }
