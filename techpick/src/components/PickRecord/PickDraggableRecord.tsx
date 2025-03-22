@@ -1,6 +1,7 @@
 'use client';
 
 import { PICK } from '@/constants/pick';
+import { useDragSelect } from '@/libs/@drag-select/useDragSelect';
 import { useFetchPickListByFolderId } from '@/queries/useFetchPickListByFolderId';
 import { usePickStore } from '@/stores/pickStore';
 import { useUpdatePickStore } from '@/stores/updatePickStore';
@@ -57,6 +58,10 @@ export function PickDraggableRecord({
       currentUpdateTagPickId === pickInfo.id,
   });
   const pickElementId = `${PICK}-${pickId}`;
+  const { setNodeRef: setDragSelectNodeRef } = useDragSelect({
+    id: pickId,
+    data: { pickInfo },
+  });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -124,6 +129,7 @@ export function PickDraggableRecord({
         id={pickElementId}
         onClick={(event) => handleClick(pickId, event)}
         onMouseDown={handleMouseDown}
+        ref={setDragSelectNodeRef}
       >
         <PickContextMenu pickInfo={pickInfo}>
           <PickRecord

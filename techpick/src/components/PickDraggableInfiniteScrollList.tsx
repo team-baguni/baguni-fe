@@ -1,7 +1,6 @@
 'use client';
 
 import { PICK_LIST_SIZE } from '@/constants/pickListSize';
-import { DragSelectable } from '@/libs/@drag-select/DragSelectable';
 import { NonDragSelectArea } from '@/libs/@drag-select/NonDragSelectArea';
 import { useFetchPickListByFolderId } from '@/queries/useFetchPickListByFolderId';
 import type { FolderIdType } from '@/types/FolderIdType';
@@ -48,11 +47,9 @@ export function PickDraggableInfiniteScrollList({
             key={pick.id}
             ref={index === pickList.length - 10 ? ref : undefined}
           >
-            <DragSelectable>
-              <NonDragSelectArea>
-                <PickDraggableRecord pickInfo={pick} />
-              </NonDragSelectArea>
-            </DragSelectable>
+            <NonDragSelectArea>
+              <PickDraggableRecord pickInfo={pick} />
+            </NonDragSelectArea>
           </div>
         );
       })}
