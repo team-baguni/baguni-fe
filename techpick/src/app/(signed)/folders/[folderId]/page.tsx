@@ -10,6 +10,7 @@ import { DragSelectContext } from '@/libs/@drag-select/DragSelectContext';
 import { DragSelectOverlay } from '@/libs/@drag-select/DragSelectOverlay';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { dragSelectOverlayStyle } from './page.css';
 
 export default function FolderDetailPage() {
   const { folderId: stringFolderId } = useParams<{ folderId: string }>();
@@ -30,7 +31,7 @@ export default function FolderDetailPage() {
         <PickContentLayout>
           <PickDraggableInfiniteScrollList folderId={folderId} />
         </PickContentLayout>
-        <DragSelectOverlay />
+        <DragSelectOverlay className={dragSelectOverlayStyle} />
       </DragSelectContext>
     </FolderContentLayout>
   );
