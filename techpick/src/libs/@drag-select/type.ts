@@ -16,7 +16,7 @@ export interface DragSelectEvent {
 
 export interface DragSelectMoveEvent extends DragSelectEvent {
   currentPositionCoordinate: CoordinateType;
-  dragSelectData: DragSelectableItemData[];
+  dragSelectItems: DragSelectableItemData[];
 }
 
 export interface DragSelectMonitorListener {
