@@ -34,8 +34,6 @@ export default function FolderDetailPage() {
   const onDragSelectEnd = ({ dragSelectItems }: DragSelectMoveEvent) => {
     const selectedPickIdList: number[] = [];
 
-    console.log('dragSelectItems', dragSelectItems);
-
     for (const dragSelectItem of dragSelectItems) {
       const pickInfo = dragSelectItem.data?.pickInfo;
       if (isPickInfoObject(pickInfo)) {
