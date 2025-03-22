@@ -16,7 +16,7 @@ export interface DragSelectEvent {
 
 export interface DragSelectMoveEvent extends DragSelectEvent {
   currentPositionCoordinate: CoordinateType;
-  elementList: HTMLElement[];
+  dragSelectData: DragSelectableItemData[];
 }
 
 export interface DragSelectMonitorListener {
@@ -34,4 +34,27 @@ export type RegisterListener = (
 export interface DragSelectMonitorEvent {
   type: keyof DragSelectMonitorListener;
   event: DragSelectEvent | DragSelectMoveEvent;
+}
+
+/**
+ * Internal context
+ */
+export type UniqueId = string | number;
+
+export interface DragSelectableItemData {
+  node: HTMLElement;
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  data: Record<string, any>;
+}
+
+export type DragSelectableItemsWeakMapKey = UniqueId;
+export type DragSelectItems = UniqueId[];
+export type DragSelectableItemsWeakMap = Map<
+  DragSelectableItemsWeakMapKey,
+  DragSelectableItemData
+>;
+
+export interface DragSelectInternalContextType {
+  dragSelectableItemsWeakMap: DragSelectableItemsWeakMap;
+  dragSelectItems: DragSelectItems;
 }
