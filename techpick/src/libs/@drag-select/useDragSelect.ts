@@ -8,6 +8,10 @@ interface UseDragSelectParam {
   data?: Record<string, any>;
 }
 
+/**
+ *
+ * @param id id는 반드시 고유해야합니다.
+ */
 export function useDragSelect({ id, data = {} }: UseDragSelectParam) {
   const { dragSelectItems, dragSelectableItemsMap } =
     useInternalDragSelectData();

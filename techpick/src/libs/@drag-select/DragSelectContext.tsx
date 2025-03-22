@@ -31,6 +31,12 @@ interface DragSelectContextProps extends DragSelectMonitorListener {
   distance?: number;
 }
 
+/**
+ *
+ * @param container drag-select 기능이 필요한 영역입니다. 기본적으로는 `body`입니다.
+ * @param distance drag-select 이벤트가 시작하는 최소 px입니다. 기본적으로는 10px입니다.
+ * @returns
+ */
 export function DragSelectContext({
   children,
   container = document.querySelector('body')!,
