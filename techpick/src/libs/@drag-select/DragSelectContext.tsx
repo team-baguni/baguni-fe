@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { MOUSE_LEFT_CLICK } from './constant';
@@ -82,15 +83,12 @@ export function DragSelectContext({
     [listeners],
   );
 
-  useEffect(() => {
-    if (!container) {
-      return;
-    }
+  const startCoordinate = useRef<CoordinateType | null>(null);
+  const pointerEvent = useRef<PointerEvent | null>(null);
+  const animationFrameId = useRef<number | null>(null);
 
-    let startCoordinate: CoordinateType | null = null;
-    let pointerEvent: PointerEvent | null = null;
-
-    const handlePointerDown = (event: PointerEvent) => {
+  const handlePointerDown = useCallback(
+    (event: PointerEvent) => {
       if (event.button !== MOUSE_LEFT_CLICK) {
         return;
       }
@@ -104,34 +102,40 @@ export function DragSelectContext({
         return;
       }
 
-      startCoordinate = getAbsoluteCoordinates(event, container);
-
+      startCoordinate.current = getAbsoluteCoordinates(event, container);
       dispatch({
         type: 'onDragSelectStart',
-        event: { startPositionCoordinate: startCoordinate },
+        event: { startPositionCoordinate: startCoordinate.current },
       });
-    };
+    },
+    [container, dispatch],
+  );
 
-    const handlePointerMove = (event: Event) => {
-      requestAnimationFrame(() => {
-        if (!startCoordinate) {
-          return;
-        }
+  const handlePointerMove = useCallback(
+    (event: Event) => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
 
+      animationFrameId.current = requestAnimationFrame(() => {
         if (event instanceof PointerEvent) {
-          pointerEvent = event;
+          pointerEvent.current = event;
         }
 
-        if (!pointerEvent) {
+        if (!startCoordinate.current || !pointerEvent.current) {
           return;
         }
 
         const currentCoordinate = getAbsoluteCoordinates(
-          pointerEvent,
+          pointerEvent.current,
           container,
         );
-        const rect = createRectFromPoints(startCoordinate, currentCoordinate);
+        const rect = createRectFromPoints(
+          startCoordinate.current,
+          currentCoordinate,
+        );
 
+        // 거리 이내면 그냥 끝
         const curDistance = (rect.x2 - rect.x1) ** 2 + (rect.y2 - rect.y1) ** 2;
         if (curDistance < distance ** 2) {
           return;
@@ -148,23 +152,30 @@ export function DragSelectContext({
           type: 'onDragSelectMove',
           event: {
             currentPositionCoordinate: currentCoordinate,
-            startPositionCoordinate: startCoordinate,
+            startPositionCoordinate: startCoordinate.current,
             dragSelectItems: dragSelectData,
           },
         });
       });
-    };
+    },
+    [container, distance, dispatch, dragSelectItems, dragSelectableItemsMap],
+  );
 
-    const handlePointerUp = (event: PointerEvent) => {
-      if (!startCoordinate) {
+  const handlePointerUp = useCallback(
+    (event: PointerEvent) => {
+      if (!startCoordinate.current) {
         return;
       }
 
       const currentCoordinate = getAbsoluteCoordinates(event, container);
-      const rect = createRectFromPoints(startCoordinate, currentCoordinate);
+      const rect = createRectFromPoints(
+        startCoordinate.current,
+        currentCoordinate,
+      );
+
       const curDistance = (rect.x2 - rect.x1) ** 2 + (rect.y2 - rect.y1) ** 2;
       if (curDistance < distance ** 2) {
-        startCoordinate = null;
+        startCoordinate.current = null;
         return;
       }
 
@@ -179,13 +190,20 @@ export function DragSelectContext({
         type: 'onDragSelectEnd',
         event: {
           currentPositionCoordinate: currentCoordinate,
-          startPositionCoordinate: startCoordinate,
+          startPositionCoordinate: startCoordinate.current,
           dragSelectItems: dragSelectData,
         },
       });
 
-      startCoordinate = null;
-    };
+      startCoordinate.current = null;
+    },
+    [container, distance, dispatch, dragSelectItems, dragSelectableItemsMap],
+  );
+
+  useEffect(() => {
+    if (!container) {
+      return;
+    }
 
     container.addEventListener('pointerdown', handlePointerDown);
     container.addEventListener('pointermove', handlePointerMove);
@@ -198,7 +216,7 @@ export function DragSelectContext({
       container.removeEventListener('pointerup', handlePointerUp);
       container.removeEventListener('scroll', handlePointerMove);
     };
-  }, [dispatch, container, dragSelectableItemsMap, dragSelectItems, distance]);
+  }, [container, handlePointerDown, handlePointerMove, handlePointerUp]);
 
   return (
     <DragSelectMonitorContext.Provider value={register}>
