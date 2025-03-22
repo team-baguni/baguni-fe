@@ -60,11 +60,12 @@ export const isElementInRect = ({
 }: IsElementInRectParameter) => {
   // 스크롤 값을 고려한 절대 좌표 계산
 
+  const containerRect = container.getBoundingClientRect();
   const elementRect = element.getBoundingClientRect();
-  const left = elementRect.left + container.scrollLeft;
-  const right = elementRect.right + container.scrollLeft;
-  const top = elementRect.top + container.scrollTop;
-  const bottom = elementRect.bottom + container.scrollTop;
+  const left = elementRect.left + container.scrollLeft - containerRect.left;
+  const right = elementRect.right + container.scrollLeft - containerRect.left;
+  const top = elementRect.top + container.scrollTop - containerRect.top;
+  const bottom = elementRect.bottom + container.scrollTop - containerRect.top;
 
   const xLeft = rect.x1;
   const xRight = rect.x2;
