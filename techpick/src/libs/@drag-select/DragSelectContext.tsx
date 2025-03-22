@@ -28,11 +28,13 @@ import {
 
 interface DragSelectContextProps extends DragSelectMonitorListener {
   container?: HTMLElement;
+  distance?: number;
 }
 
 export function DragSelectContext({
   children,
   container = document.querySelector('body')!,
+  distance = 10,
   onDragSelectStart = () => {},
   onDragSelectMove = () => {},
   onDragSelectEnd = () => {},
@@ -123,6 +125,12 @@ export function DragSelectContext({
           container,
         );
         const rect = createRectFromPoints(startCoordinate, currentCoordinate);
+
+        const curDistance = (rect.x2 - rect.x1) ** 2 + (rect.y2 - rect.y1) ** 2;
+        if (curDistance < distance ** 2) {
+          return;
+        }
+
         const dragSelectData = getDragSelectInRect({
           container,
           rect,
@@ -135,7 +143,7 @@ export function DragSelectContext({
           event: {
             currentPositionCoordinate: currentCoordinate,
             startPositionCoordinate: startCoordinate,
-            dragSelectData,
+            dragSelectItems: dragSelectData,
           },
         });
       });
@@ -146,8 +154,14 @@ export function DragSelectContext({
         return;
       }
 
-      const currentCoordinate = getAbsoluteCoordinates(event);
+      const currentCoordinate = getAbsoluteCoordinates(event, container);
       const rect = createRectFromPoints(startCoordinate, currentCoordinate);
+      const curDistance = (rect.x2 - rect.x1) ** 2 + (rect.y2 - rect.y1) ** 2;
+      if (curDistance < distance ** 2) {
+        startCoordinate = null;
+        return;
+      }
+
       const dragSelectData = getDragSelectInRect({
         container,
         rect,
@@ -160,7 +174,7 @@ export function DragSelectContext({
         event: {
           currentPositionCoordinate: currentCoordinate,
           startPositionCoordinate: startCoordinate,
-          dragSelectData,
+          dragSelectItems: dragSelectData,
         },
       });
 
@@ -178,7 +192,7 @@ export function DragSelectContext({
       container.removeEventListener('pointerup', handlePointerUp);
       container.removeEventListener('scroll', handlePointerMove);
     };
-  }, [dispatch, container, dragSelectableItemsMap, dragSelectItems]);
+  }, [dispatch, container, dragSelectableItemsMap, dragSelectItems, distance]);
 
   return (
     <DragSelectMonitorContext.Provider value={register}>
