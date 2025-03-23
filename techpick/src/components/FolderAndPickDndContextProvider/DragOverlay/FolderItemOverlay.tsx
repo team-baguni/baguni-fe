@@ -1,5 +1,5 @@
 import { FolderOpen as FolderOpenIcon } from 'lucide-react';
-import { NavigationItem } from '../SideNavigationBar/NavigationItem';
+import { NavigationItem } from '../../SideNavigationBar/NavigationItem';
 import { folderItemOverlay } from './folderItemOverlay.css';
 
 export function FolderItemOverlay({ name }: FolderItemOverlayProps) {

@@ -1,5 +1,4 @@
 'use client';
-
 import { useGetDragOverStyle } from '@/hooks/useGetDragOverStyle';
 import { useFetchFolders } from '@/queries/useFetchFolders';
 import { usePickStore } from '@/stores/pickStore';
@@ -13,14 +12,16 @@ import {
   type DragStartEvent,
   useDndMonitor,
 } from '@dnd-kit/core';
-import { useState } from 'react';
+import { memo, useState } from 'react';
+import { useElementClickPosition } from '../useElementClickPosition';
 import { FolderItemOverlay } from './FolderItemOverlay';
 import { PickCarouselCardOverlay } from './PickCarouselCardOverlay';
 import { PickDragOverlayShadowList } from './PickDragOverlayShadowList';
 import { PickRecordOverlay } from './PickRecordOverlay';
 import { dragCountStyle, stackedOverlayStyle } from './dragOverlay.css';
 
-export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
+export const DargOverlay = memo(function DragOverlay() {
+  const { elementClickPosition } = useElementClickPosition();
   const isPickDragging = usePickStore((state) => state.isDragging);
   const draggingPickInfo = usePickStore((state) => state.draggingPickInfo);
   const selectedPickIdList = usePickStore((state) => state.selectedPickIdList);
@@ -28,9 +29,9 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     useState<DraggingObjectType>(null);
   const [draggingRecommendPickInfo, setDraggingRecommendPickInfo] =
     useState<RecommendPickType | null>(null);
-  const { data: folderRecord } = useFetchFolders();
   const [draggingFolderInfo, setDraggingFolderInfo] =
     useState<FolderType | null>(null);
+  const { data: folderRecord } = useFetchFolders();
 
   const onDragStart = (event: DragStartEvent) => {
     const { active } = event;
@@ -66,14 +67,14 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     isDragging: isPickDragging,
     scale: 0.7,
   });
-  const { overlayStyle: folderOverlayStyle } = useGetDragOverStyle({
-    elementClickPosition,
-    isDragging: draggingObjectType === 'folder',
-  });
   const { overlayStyle: recommendPickOverlayStyle } = useGetDragOverStyle({
     elementClickPosition,
     isDragging: draggingObjectType === 'recommendPick',
     scale: 0.4,
+  });
+  const { overlayStyle: folderOverlayStyle } = useGetDragOverStyle({
+    elementClickPosition,
+    isDragging: draggingObjectType === 'folder',
   });
   const selectedPickListCount = selectedPickIdList.length - 1;
   const shadowCount = Math.min(selectedPickListCount, 5);
@@ -94,14 +95,6 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
     );
   }
 
-  if (draggingObjectType === 'folder' && draggingFolderInfo) {
-    return (
-      <DragOverlayPrimitive style={folderOverlayStyle}>
-        <FolderItemOverlay name={draggingFolderInfo.name} />
-      </DragOverlayPrimitive>
-    );
-  }
-
   if (draggingObjectType === 'recommendPick' && draggingRecommendPickInfo) {
     return (
       <DragOverlayPrimitive style={recommendPickOverlayStyle}>
@@ -109,13 +102,14 @@ export function DargOverlay({ elementClickPosition }: DargOverlayProps) {
       </DragOverlayPrimitive>
     );
   }
-}
 
-interface DargOverlayProps {
-  elementClickPosition: {
-    x: number;
-    y: number;
-  };
-}
+  if (draggingObjectType === 'folder' && draggingFolderInfo) {
+    return (
+      <DragOverlayPrimitive style={{ ...folderOverlayStyle }}>
+        <FolderItemOverlay name={draggingFolderInfo.name} />
+      </DragOverlayPrimitive>
+    );
+  }
+});
 
 type DraggingObjectType = 'recommendPick' | 'pick' | 'folder' | null;

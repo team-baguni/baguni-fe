@@ -1,8 +1,5 @@
 'use client';
-
 import { ROUTES } from '@/constants/route';
-import { useGetDndContextSensor } from '@/hooks/useGetDndContextSensor';
-import { pointerWithinWithClosestCenter } from '@/utils/pointerWithinWithClosestCenter';
 import { pointerWithin } from '@dnd-kit/core';
 import { DndContext } from '@dnd-kit/core';
 import { usePathname } from 'next/navigation';
@@ -10,9 +7,12 @@ import { useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import { DndMonitorContext } from './DndMonitorContext';
 import { DargOverlay } from './DragOverlay/DragOverlay';
+import { ElementClickPositionContext } from './ElementClickPositionContext';
+import { pointerWithinWithClosestCenter } from './pointerWithinWithClosestCenter';
+import { useGetDndContextSensor } from './useGetDndContextSensor';
 
 /**
- * @description pick과 folder에서 drag & drop을 이용할 시에 콘텐스트로 감싸줘야합니다.
+ * @description pick과 folder에서 drag & drop을 이용할 시에 context로 감싸줘야합니다.
  */
 export function FolderAndPickDndContextProvider({
   children,
@@ -34,9 +34,13 @@ export function FolderAndPickDndContextProvider({
       sensors={sensors}
       collisionDetection={collisionDetectionAlgorithm}
     >
-      <DndMonitorContext />
-      <DargOverlay elementClickPosition={elementClickPosition} />
-      {children}
+      <ElementClickPositionContext.Provider
+        value={{ elementClickPosition, setElementClickPosition }}
+      >
+        <DndMonitorContext />
+        <DargOverlay />
+        {children}
+      </ElementClickPositionContext.Provider>
     </DndContext>
   );
 }
