@@ -20,6 +20,8 @@ jobs:
       - name: Create .env.development File
         run: |
           touch .env.development
+          echo "DEV_PASSWORD=${{ secrets.DEV_PASSWORD }}" >> .env.development
+          echo "NEXT_PUBLIC_API=${{ secrets.FRONT_NEXT_PUBLIC_API }}" >> .env.development
           echo "TEST_BASE_URL=${{ secrets.TEST_BASE_URL }}" >> .env.development
 
       - name: Enable Corepack
